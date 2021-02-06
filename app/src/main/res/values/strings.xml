@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Wk01Hw02</string>
+    <string name="MainTitle">Homework 2 \n Log In!</string>
+    <string name="usernameET">Username</string>
+    <string name="passwordET">Password</string>
+    <string name="logInBtn">Log In</string>
 </resources>

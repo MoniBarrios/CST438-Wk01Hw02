@@ -2,60 +2,68 @@ package com.example.wk01hw02;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
-
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView textViewResult;
+
+    EditText mUsername;
+    EditText mPassword;
+
+    Button login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textViewResult = findViewById(R.id.text_view_result);
 
-        Retrofit retrofit= new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        mUsername = findViewById(R.id.usernameET);
+        mPassword= findViewById(R.id.passwordET);
 
-        JsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+        login = findViewById(R.id.logInBtn);
 
-        Call<List<Post>> call = jsonPlaceHolderApi.getPosts();
-
-        call.enqueue(new Callback<List<Post>>() {
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if (!response.isSuccessful()) {
-                    textViewResult.setText("Code: " + response.code());
-                    return;
+            public void onClick(View view){
+
+                int userId = verifyLogin();
+                if(userId>=0){
+
+                    Intent intent = new Intent(MainActivity.this, LandingPage.class);
+                    intent.putExtra("userId",Integer.toString(userId));
+                    intent.putExtra("username", "din_djarin");
+                    startActivity(intent);
+
+                } else{
+                    mUsername.setText(null);
+                    mPassword.setText(null);
+
+                    Toast toast = Toast.makeText(getApplicationContext(), "Incorrect Username or Password", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
-
-                List<Post> posts = response.body();
-
-                for (Post post : posts) {
-                    String content = "";
-                    content += "ID: " + post.getId() + "\n";
-                    content += "User ID: " + post.getUserId() + "\n";
-                    content += "Title: " + post.getTitle() + "\n";
-                    content += "Text: " + post.getText() + "\n\n";
-
-                    textViewResult.append(content);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
             }
         });
+    }
+
+    private int verifyLogin(){
+
+        String username = mUsername.getText().toString();
+        String password = mPassword.getText().toString();
+
+        String trueUserName = "din_djarin";
+        String truePassword = "baby_yoda_ftw";
+
+        if(trueUserName.equals(username)){
+            if(truePassword.equals(password))
+            {
+                return 1;
+            }
+        }
+
+        return -1;
     }
 }
